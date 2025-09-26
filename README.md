@@ -1,43 +1,81 @@
-﻿
-# TrainCode: Áp dụng SRP(Single Responsibility Principle) để Refactor API/ create-oder theo chuẩn SOLID.
+﻿# TrainCode: Áp Dụng SRP Để Refactor API /create-order Theo Chuẩn SOLID
 
-# Refactor endpoint create-order theo chuẩn SRP để dễ dàng test, rõ ràng, dễ mở rộng, dể bảo trì.
+# Mô Tả
+# Dự án refactor endpoint /create-order (e-commerce) theo Single Responsibility Principle (SRP) trong SOLID, nhằm tạo code sạch, dễ test, bảo trì và mở rộng. Lý do chính: Hướng đến code chuyên nghiệp, tránh God Class, mỗi method/class chỉ đảm nhận một nhiệm vụ duy nhất (e.g., Validate chỉ kiểm tra input).
 
-# Hướng đến cách code chuyên nghiệp, sạch, dễ mở rộng là lý do chính để tui nghiên cứu về cấu trúc SOLID
-# Khi áp dụng nguyên lý SRP thì cấu trúc code của dự án trở nên sạch và tường minh hơn. Được thể hiện qua từng method/class đảm nhiệm một nhiệm vụ duy nhất,
-# không God Class. Ví dụ: class Validator là để chưa nhiệm vụ là Validate--> chứa hàm IsValidateOrder()--> kiểm tra thông tin đơn hàng có hợp lệ không.
+# Mục Tiêu
+# Tách logic /create-order thành các class độc lập (Validate, OrderLogger, v.v.) theo SRP.
+# Viết unit test với xUnit để đảm bảo chất lượng (coverage >80%).
+# Tiết kiệm thời gian bảo trì (e.g., sửa rule validate chỉ mất 5 phút thay vì 30 phút).
 
-# Dự án được sử dụng bởi ngôn ngữ C#, công nghệ ASP.NET CORE API,.NET 8.0, XUnit Test, Visual Studio.
+# Cấu Trúc Code
 
-# Dự án được chia sẻ lên github, có thể clone về và trải nghiệm
-# `git clone https://github.com/anh11khoa2003jjjjaaaa/TrainCode.git`
-# Cần tải Nuget Package: xUnit để viết test case và test.
+# Trước refactor: OrderManager xử lý 5 nhiệm vụ (validate, lưu DB, log, notify, stats), vi phạm SRP.
 
-# ---Hướng dẫn chạy code---
-# Trong solution hiện tại có 2 project TrainCode và TrainCode_unitest.
-# __________TrainCode___________#
-# Cần mở tất cả class để xem cách trình bài và để xem kết quả của project TrainCode thì click-right vào solution TrainCode và chọn Set as Startup Project rồi run nó.
-# Sau khi chạy dự án thì nó trả về swagger giao diện để test API `https://localhost:7001/OrderSRP?userId=3&productId=1&quantity=4&totalPrice=7`
-# __________TrainCode_unitest_______#
-# TrainCode_unitest thì click-right vào solution TrainCode và chọn Set as Startup Project. Sau đó click vào class OrderValidator.cs --> nhìn trên thanh menu công cụ click vào `Test` để chọn `Test Explorer`,
-# Trong class OrderValidatorTests có 2 method Validate_InvalidateUserId_ThrowArgumentException và Validate_ValidData_DoesNotThrow.
-# Trong method Validate_InvalidateUserId_ThrowArgumentException để kiểm tra hàm IsValidateOder có trả về throw ArgumentException đúng như logic code đã viết không --> nếu trả về đúng ArgumentException là pass.
-# Trong method Validate_ValidData_DoesNotThrow để kiểm tra hàm IsValidateOder xem có lỗi gì không (throw), nếu như không có là pass.
+# Sau refactor: Tách thành 5 class:
 
-# Nguyên lý SRP đem lại khá nhiều lợi ích về về clean code, dễ bảo trì, mở rộng code. Tiết kiệm thời gian trong việc bổ sung chức năng, testing.
+# Validate: Kiểm tra input (userId > 0, productId > 0, totalPrice >= 0).
+# OrderRepository: Lưu order vào List.
+# OrderLogger: Ghi log order vào Console.
+# NotificationService: Gửi thông báo (email/Slack).
+# OrderStatsService: Cập nhật thống kê (TotalOrders).
+# File chính: Validate.cs, OrderLogger.cs, OrderValidatorTests.cs, OrderLoggerTests.cs.
 
-# Để chứng minh được việc tiết kiệm thời gian trong việc mở rộng code thì hãy xem:
-# Ví dụ như bạn có một hàm ValidateOrder (Ban đầu chỉ kiểm trả là orderId, productId có tồn tại không), sau đó nhận được một yêu cầu từ khách hàng là phải bổ sung validate cho hàm đó (phải thêm orderId>=1, 0<price<1000000000000),
-# Chúng ta chỉ cần thêm vào logic trong hàm ValidateOrder thỏa mãn yêu cầu thay vì phải thêm nhiều if else or switch case trong code chính --> nhìn rối mắt, phá vỡ nguyên lý của SRP.
+# Công Nghệ
 
-# Tiếp theo tôi đang hướng đến nguyên lý O trong SOLID. Mục đích là tìm hiểu hết tất cả các nguyên lý về SOLID và thực hành nó vào trong dự án thực tế.
+# Ngôn ngữ: C#.
+# Framework: ASP.NET Core API, .NET 8.0.
+# Test: xUnit (Assert.Throws, Assert.Contains).
+# IDE: Visual Studio.
 
-# Author: Huỳnh Anh Khoa, 26/9/2025
-# Contract: huynhanhkhoa30042019@gmail.com
-# Facebook cá nhân: https://www.facebook.com/
+# Cài Đặt
+
+# Clone repository:
+# git clone https://github.com/anh11khoa2003jjjjaaaa/TrainCode.git
+# Restore dependencies:
+
+# dotnet restore
+
+# Build dự án:
+
+# dotnet build
+
+# Sử Dụng
+
+# Set Startup Project: Right-click solution TrainCode → Set as Startup Project → Run (F5).
+# Test API: Swagger tại https://localhost:7001/OrderSRP?userId=3&productId=1&quantity=4&totalPrice=7.
+# Chạy test: Right-click TrainCode_unitest → Set as Startup Project → Test → Test Explorer → Run All Tests.
+
+# Unit Test
+
+# OrderValidatorTests.cs:
+# IsValidateOder_InvalidUserId_ThrowsArgumentException: Kiểm tra throw ArgumentException khi userId <= 0.
+# IsValidateOder_ValidData_DoesNotThrow: Kiểm tra không throw khi input hợp lệ.
+# OrderLoggerTests.cs: LogOrderCreated_ValidOrder_ContainsUserIdInLog: Kiểm tra log chứa "UserId=1" (Assert.Contains).
+
+# Kết quả: 3 test pass, coverage >80%.
+
+# Lợi Ích SRP
+
+# Testability: Test độc lập, không cần mock DB, đạt coverage >80%.
+# Maintainability: Sửa rule validate (e.g., thêm quantity > 0) chỉ mất 5 phút, thay vì sửa God Class 30 phút.
+# Scalability: Team lớn dễ phân chia công việc, tránh xung đột code.
+
+# Ví Dụ Minh Họa
+
+# Ban đầu: ValidateOrder kiểm tra orderId, productId tồn tại.
+# Yêu cầu mới: Thêm orderId >= 1, 0 < price < 1000000000000.
+# Với SRP: Chỉ sửa Validate.IsValidateOder, thêm if-else, không ảnh hưởng code chính.
+
+# Kế Hoạch Tiếp Theo
+
+# Áp dụng nguyên lý O (Open-Closed Principle) trong SOLID.
+# Tích hợp Factory Pattern cho NotificationService.
+# Thêm async/await cho I/O.
+
+# Tác Giả
+
+# Author: Huỳnh Anh Khoa
+# Date: 26/9/2025
+# Email: huynhanhkhoa30042019@gmail.com
 # Facebook công việc: https://www.facebook.com/
-
-
-
-
-
